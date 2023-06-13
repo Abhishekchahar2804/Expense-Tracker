@@ -6,9 +6,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname,"public")));
 
 const sequelize = require('./util/database');
-const signUpRouter = require('./routes/signup');
+const userRouter = require('./routes/user');
 
-app.use(signUpRouter);
+app.use('/user',userRouter);
 sequelize.sync()
 .then(result=>{
     app.listen(3000);
