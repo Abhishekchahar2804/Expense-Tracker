@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    
+    <link rel="stylesheet" href="/css/style.css">
+  </head>
+  <body>
+    <section class="container">
+      <form id="my-form">
+        <div class="msg"></div>
+        <div>
+          <label for="name">Enter A Name:</label>
+          <input type="text" id="name" name="name">
+        </div>
+        <div>
+            <label for="email">Enter A Email:</label>
+            <input type="email" id="email" name="email">
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <input id="btn" type="submit" value="Sign Up" class="sign">
+      </form>
+    </section>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/signup.js"></script>
+  </body>
+</html>
