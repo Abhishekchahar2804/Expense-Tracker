@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const path = require('path');
 const  bcrypt =  require('bcrypt');
+const jwt = require('jsonwebtoken');
 const rootDir = require("../util/path");
 
 exports.getHomePage = (req, res, next) => {
@@ -17,16 +18,19 @@ exports.postAddUser = async(req,res,next)=>{
     const password = req.body.password;
 
     try{
-        const saltrounds=5;
-        bcrypt.hash(password,saltrounds,async(err,hash)=>{
+        const saltRounds=10;
+        bcrypt.hash(password,saltRounds,async(err,hash)=>{
             const result = await User.create({name:name,email:email,password:hash});
             res.status(201).json({newSignUp:result});
         })
-        
     }
     catch(err){
         console.log(err);
     }
+}
+
+function generateAccessToken(id){
+   return jwt.sign({userId:id},'secretKey');
 }
 
 
@@ -44,7 +48,7 @@ exports.postCheckUser = async(req,res,next)=>{
                 }
 
                 if(result==true){
-                    res.status(200).json({message:"successfully login"});
+                    res.status(200).json({message:"successfully login",token:generateAccessToken(user[0].id)});
                 }
                 else{
                     return res.status(400).json({message:"password is wrong"});

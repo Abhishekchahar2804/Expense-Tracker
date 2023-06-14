@@ -32,7 +32,8 @@ async function addItem(e){
 
 window.addEventListener('DOMContentLoaded',async()=>{
     try{
-        let response = await axios.get('http://localhost:3000/expense/expenses/load-data');
+        let token = localStorage.getItem('token');
+        let response = await axios.get('http://localhost:3000/expense/expenses/load-data',{headers:{"Authorization":token}});
         for(let i=0;i<response.data.allData.length;i++){
             showOnScreen(response.data.allData[i]);
         }

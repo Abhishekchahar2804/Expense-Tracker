@@ -24,7 +24,7 @@ exports.postAddExpense = async (req, res, next) => {
 
 exports.sendExpenses = async(req,res,next)=>{
     try{
-        let expense = await Expense.findAll();
+        let expense = await Expense.findAll({where:{userId:req.user.id}});
         res.status(201).json({allData:expense});
     }
     catch(err){
