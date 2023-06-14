@@ -15,6 +15,7 @@ async function AleradyUser(e){
     try{
         const response = await axios.post('http://localhost:3000/user/login/login-user',obj);
         alert(response.data.message);
+        window.location.href="/expense/";
     }
     catch(err){
         console.log(err);
