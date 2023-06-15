@@ -7,7 +7,7 @@ const authentication = require('../middleware/auth');
 
 router.get('/',expenseController.getHomePage);
 
-router.post('/add-expense',expenseController.postAddExpense);
+router.post('/add-expense',authentication.authenticated,expenseController.postAddExpense);
 
 router.get('/expenses/load-data', authentication.authenticated,expenseController.sendExpenses);
 

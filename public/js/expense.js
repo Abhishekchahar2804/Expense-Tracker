@@ -4,7 +4,10 @@ const itemList = document.getElementById('details');
 
 const adddata = document.querySelector('.adddata');
 
+const rzp =document.querySelector('.rzp');
+
 adddata.addEventListener('click',addItem);
+rzp.addEventListener('click',BuyPremium);
 
 async function addItem(e){
     e.preventDefault();
@@ -17,10 +20,11 @@ async function addItem(e){
     const obj={
         amount:amount,
         description:description,
-        category:category
+        category:category,
     }
     try{
-        let response = await axios.post('http://localhost:3000/expense/add-expense',obj);
+        let token = localStorage.getItem('token');
+        let response = await axios.post('http://localhost:3000/expense/add-expense',obj,{headers:{"Authorization":token}});
         console.log(response);
         showOnScreen(response.data.newexpense);
     }
@@ -77,4 +81,34 @@ function showOnScreen(obj){
     // }
     
     itemList.appendChild(newItem);
+}
+
+async function BuyPremium(e){
+    e.preventDefault();
+    try{
+        let token=localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/purchase/premiummembership',{headers:{"Authorization":token}})
+
+        const options={
+            "key":response.data.key_id,
+            "order_id":response.data.order.id,
+            "handler":async function(result){
+                await axios.post('http://localhost:3000/purchase/updatestatus',{
+                    order_id:options.order_id,
+                    payment_id:result.razorpay_payment_id
+                },{headers:{"Authorization":token}})
+                alert("you are premium member");
+            }
+        }
+
+        const rzpl =new Razorpay(options);
+
+        rzpl.open();
+        rzpl.on('payment.failed',function(res){
+            alert("something went wrong");
+        })
+    }
+    catch(err){
+        console.log(err);
+    }
 }

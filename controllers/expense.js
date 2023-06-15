@@ -13,7 +13,7 @@ exports.postAddExpense = async (req, res, next) => {
   const category = req.body.category;
 //   console.log(amount);
   try{
-    const result = await Expense.create({amount:amount,description:description,category:category});
+    const result = await Expense.create({amount:amount,description:description,category:category,userId:req.user.id});
     // console.log(result);
     res.status(201).json({newexpense:result});
   }
