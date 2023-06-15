@@ -8,5 +8,7 @@ router.get('/premiummembership',authentication.authenticated,purchaseControllers
 
 router.post('/updatestatus',authentication.authenticated,purchaseControllers.updateOrder)
 
+router.post('/updatefailure',authentication.authenticated,purchaseControllers.updateFailure)
+
 
 module.exports=router;

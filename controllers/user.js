@@ -29,8 +29,8 @@ exports.postAddUser = async(req,res,next)=>{
     }
 }
 
-function generateAccessToken(id){
-   return jwt.sign({userId:id},'secretKey');
+function generateAccessToken(id,ispremuimuser){
+   return jwt.sign({userId:id,ispremuimuser:ispremuimuser},'secretKey');
 }
 
 
@@ -48,7 +48,7 @@ exports.postCheckUser = async(req,res,next)=>{
                 }
 
                 if(result==true){
-                    res.status(200).json({message:"successfully login",token:generateAccessToken(user[0].id)});
+                    res.status(200).json({message:"successfully login",token:generateAccessToken(user[0].id,user[0].ispremuimuser)});
                 }
                 else{
                     return res.status(400).json({message:"password is wrong"});

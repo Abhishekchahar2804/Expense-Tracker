@@ -27,7 +27,8 @@ ul li {
 
 .container {
     margin: auto;
-    width: 800px;
+    width: 600px;
+    
     overflow: auto;
     padding: 3rem 2rem;
 }
@@ -63,4 +64,9 @@ ul li {
 
 #btn:hover {
     background: #444;
+}
+
+#leaderboard{
+    display:block;
+    margin-bottom:2px;
 }
