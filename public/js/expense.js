@@ -64,6 +64,7 @@ async function BuyPremium(e) {
 
         document.querySelector(".rzp").style.visibility = "hidden";
         document.querySelector("#msg").textContent = "You Are Premium User";
+        document.getElementById("leaderboard").textContent = "Show Leaderboard";
         localStorage.setItem("token", res.data.token);
       },
     };

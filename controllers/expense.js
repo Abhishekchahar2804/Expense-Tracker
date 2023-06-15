@@ -1,7 +1,8 @@
 const Expense = require("../models/expense");
+const User = require('../models/user');
 const path = require("path");
 const rootDir = require("../util/path");
-const e = require("express");
+const sequelize = require('../util/database');
 
 exports.getHomePage = (req, res, next) => {
   res.sendFile(path.join(rootDir, "views", "expense.html"));
@@ -12,12 +13,19 @@ exports.postAddExpense = async (req, res, next) => {
   const description = req.body.description;
   const category = req.body.category;
 //   console.log(amount);
+
+const t = await sequelize.transaction();
   try{
-    const result = await Expense.create({amount:amount,description:description,category:category,userId:req.user.id});
+    const result = await Expense.create({amount:amount,description:description,category:category,userId:req.user.id},{transaction:t});
     // console.log(result);
+    const user =await User.findOne({where:{id:req.user.id},transaction:t});
+    user.totalamount=Number(user.totalamount)+Number(amount);
+    await user.save();
+    await t.commit();
     res.status(201).json({newexpense:result});
   }
   catch(err){
+    await t.rollback();
     console.log(err);
   }
 };
@@ -33,12 +41,19 @@ exports.sendExpenses = async(req,res,next)=>{
 }
 
 exports.deleteExpense = async (req,res,next)=>{
+  const t = await sequelize.transaction();
   try{
     const eId = req.params.id;
-    await Expense.destroy({where:{id:eId}});
+    const expense = await Expense.findByPk(eId);
+    const user = await User.findByPk(expense.userId);
+    user.totalamount=Number(user.totalamount)-Number(expense.amount);
+    await user.save({transaction:t});
+    await Expense.destroy({where:{id:eId},transaction:t});
+    await t.commit();
     res.sendStatus(201);
   }
   catch(err){
+    await t.rollback();
     console.log(err);
   }
 }

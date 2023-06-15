@@ -3,20 +3,24 @@ const User = require('../models/user');
 
 exports.getLeaderBoard =async(req,res,next)=>{
     try{
-        const expenses =await Expense.findAll();
-        const users = await User.findAll();
-        const userExpense={};
-        expenses.forEach(expense=>{
-            if(userExpense[expense.id]){
-                userExpense[expense.id]+=expense.amount;
-            }
-            else{
-                userExpense[expense.id]=expense.amount;
-            }
-        })
+        // const expenses =await Expense.findAll({
+        //     attributes:['userId','amount']
+        // });
+        const users = await User.findAll({
+            attributes:['totalamount','name']
+        });
+        // const userExpense={};
+        // expenses.forEach(expense=>{
+        //     if(userExpense[expense.userId]){
+        //         userExpense[expense.userId]+=expense.amount;
+        //     }
+        //     else{
+        //         userExpense[expense.userId]=expense.amount;
+        //     }
+        // })
         let userLeaderBoard = [];
         users.forEach(user=>{
-            userLeaderBoard.push({name:user.name,total_cost:userExpense[user.id] || 0});
+            userLeaderBoard.push({name:user.name,total_cost:user.totalamount || 0});
         })
         userLeaderBoard.sort((a,b)=>b.total_cost-a.total_cost);
         res.status(201).json(userLeaderBoard);

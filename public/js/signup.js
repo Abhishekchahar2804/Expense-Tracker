@@ -15,7 +15,8 @@ async function AddUser(e){
     const obj={
         name:name,
         email:email,
-        password:password
+        password:password,
+        totalamount:0
     }
 
     try{

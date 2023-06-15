@@ -20,7 +20,7 @@ exports.postAddUser = async(req,res,next)=>{
     try{
         const saltRounds=10;
         bcrypt.hash(password,saltRounds,async(err,hash)=>{
-            const result = await User.create({name:name,email:email,password:hash});
+            const result = await User.create({name:name,email:email,password:hash,totalamount:0});
             res.status(201).json({newSignUp:result});
         })
     }
