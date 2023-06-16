@@ -65,6 +65,7 @@ async function BuyPremium(e) {
         document.querySelector(".rzp").style.visibility = "hidden";
         document.querySelector("#msg").textContent = "You Are Premium User";
         document.getElementById("leaderboard").textContent = "Show Leaderboard";
+        document.getElementById('downloadexpense').textContent="Download File"
         localStorage.setItem("token", res.data.token);
       },
     };
@@ -106,6 +107,22 @@ async function premiumFeature(e) {
   }
 }
 
+async function download(){
+  let token = localStorage.getItem('token');
+  try{
+    const reaponse=await axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
+
+    var a = document.createElement("a");
+    a.href = response.data.fileUrl;
+    a.download = 'myexpense.csv';
+    a.click();
+  }
+  catch(err){
+    console.log(err);
+  }
+  
+}
+
 function parseJwt(token) {
   var base64Url = token.split(".")[1];
   var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -132,6 +149,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       document.querySelector(".rzp").style.visibility = "hidden";
       document.querySelector("#msg").textContent = "You Are Premium User";
       document.getElementById("leaderboard").textContent = "Show Leaderboard";
+      document.getElementById('downloadexpense').textContent="Download File"
     }
     let response = await axios.get(
       "http://localhost:3000/expense/expenses/load-data",

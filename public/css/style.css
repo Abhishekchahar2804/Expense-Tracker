@@ -9,7 +9,7 @@ body {
     line-height: 1.6;
 }
 
-header {
+.heading{
     background: #f4f4f4;
     padding: 1rem;
     text-align: center;
@@ -69,4 +69,16 @@ ul li {
 #leaderboard{
     display:block;
     margin-bottom:2px;
+}
+
+/* expenses table */
+
+.expenses{
+    margin: auto;
+    text-align: center;
+    margin-top: 5px;
+}
+
+.expenses .heading{
+    background-color: rgb(64, 138, 223);
 }
