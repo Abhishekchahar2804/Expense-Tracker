@@ -12,17 +12,17 @@ const userRouter = require('./routes/user');
 const expenseRouter = require('./routes/expense');
 const purchaseRouter = require('./routes/purchase');
 const premiumRouter = require('./routes/premium');
-// const forgetPasswordRouter = require('./routes/forgetpassword');
+const forgetPasswordRouter = require('./routes/forgetpassword');
 const User = require('./models/user');
 const Expense = require('./models/expense');
 const Order = require('./models/order');
-// const ForgetPassword = require('./models/forgetpassword');
+const ForgetPassword = require('./models/forgetpassword');
 
 app.use('/user',userRouter);
 app.use('/expense',expenseRouter);
 app.use('/purchase',purchaseRouter);
 app.use('/premium',premiumRouter);
-// app.use('/password',forgetPasswordRouter);
+app.use('/password',forgetPasswordRouter);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
@@ -30,8 +30,8 @@ Expense.belongsTo(User);
 User.hasMany(Order);
 Order.belongsTo(User);
 
-// User.hasMany(Forgotpassword);
-// Forgotpassword.belongsTo(User);
+User.hasMany(ForgetPassword);
+ForgetPassword.belongsTo(User);
 
 sequelize.sync()
 .then(result=>{
