@@ -25,14 +25,10 @@ exports.postAddExpense = async (req, res, next) => {
       },
       { transaction: t }
     );
-    // console.log(result);
-    const user = await User.findOne({
-      where: { id: req.user.id },
-      transaction: t,
-    });
-    user.totalamount = Number(user.totalamount) + Number(amount);
-    await user.save();
-    await t.commit();
+    const oldamount=req.user.totalamount;
+    const newamount=Number(oldamount)  + Number(amount) ;
+   await User.update({totalamount:newamount} , {where:{id:req.user.id} , transaction:t });
+   await t.commit();
     res.status(201).json({ newexpense: result });
   } catch (err) {
     await t.rollback();
@@ -44,15 +40,15 @@ const expensePerPage = 5;
 
 exports.sendExpenses = async (req, res, next) => {
   try {
-    let page = req.params.page || 1;
+    let page = +req.query.page || 1;
     let totalexpense = await Expense.count();
+    console.log(totalexpense);
     let expenses = await Expense.findAll(
-      { where: { userId: req.user.id } },
-      {
-        offset: (page - 1) * expensePerPage,
-        limit: expensePerPage,
-      }
-    );
+      { where: { userId: req.user.id },
+      offset: (page - 1) * expensePerPage,
+      limit: expensePerPage,
+      
+    });
     res.status(201).json({
       expenses: expenses,
       currentPage: page,

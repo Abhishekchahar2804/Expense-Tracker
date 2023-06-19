@@ -1,5 +1,6 @@
 const rootDir = require("../util/path");
 const path = require("path");
+require('dotenv').config(); 
 const nodemailer = require("nodemailer");
 const bcrypt = require('bcrypt');
 const uuid = require("uuid");
@@ -20,12 +21,12 @@ exports.postForgetPassword = async (req, res, next) => {
         host: "smtp.ethereal.email",
         port: 587,
         auth: {
-          user: "heath.willms36@ethereal.email",
-          pass: "VGDd5gxP8wtpUdtVrv",
+          user: "victoria.cruickshank@ethereal.email",
+          pass:"E6Ry9uGtNQ6TC86H98",
         },
       });
       const msg = {
-        from: "heath.willms36@ethereal.email",
+        from:"victoria.cruickshank@ethereal.email",
         to: email,
         subject: "Sending with nodemailer is Fun",
         text: "and easy to do anywhere, even with Node.js",

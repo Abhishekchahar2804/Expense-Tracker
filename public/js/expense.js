@@ -174,40 +174,57 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-function showPagination(data) {
-  const currentPage = data.currentPage;
-  const hasNextPage = data.hasNextPage;
-  const nextPage = data.nextPage;
-  const hasPreviousPage = data.hasPreviousPage;
-  const previousPage = data.previousPage;
-  const lastPage = data.lastPage;
-  const pagination = document.getElementById("pagination");
-  if (hasPreviousPage) {
-    const btn2 = document.createElement("button");
-    btn2.innerHTML = previousPage;
-    btn2.addEventListener("click", ()=> getExpenses(previousPage));
-    pagination.appendChild(btn2);
-  }
-  const btn1 = document.createElement("button");
-  btn1.innerHTML = currentPage;
-  // btn1.addEventListener("click", getExpenses(currentPage));
-  pagination.appendChild(btn1);
+function showPagination({currentPage,hasNextPage,nextPage,hasPreviousPage,previousPage}){
 
-  if (hasNextPage) {
-    const btn3 = document.createElement("button");
-    btn3.innerHTML = previousPage;
-    btn3.addEventListener("click",()=> getExpenses(nextPage));
-    pagination.appendChild(btn3);
-  }
+  const pagination=document.getElementById('pagination');
+
+  if(hasPreviousPage){
+    const prevBtn=document.createElement('button');
+    prevBtn.innerHTML=previousPage;
+    prevBtn.addEventListener('click' , ()=>{
+
+      getProducts(previousPage);
+    });
+    pagination.appendChild(prevBtn);
+   }
+
+  const crtBtn=document.createElement('button');
+  crtBtn.innerHTML=currentPage;
+  crtBtn.addEventListener('click',()=>{
+    getProducts(currentPage);
+  });
+  pagination.appendChild(crtBtn);
+  if(hasNextPage){
+    const nextBtn=document.createElement('button');
+    nextBtn.innerHTML=nextPage;
+    nextBtn.addEventListener('click',()=>{
+      getProducts(nextPage);
+    });
+    pagination.appendChild(nextBtn);
+   }
 }
 
-async function getExpenses(page) {
+async function getProducts(page) {
   const token = localStorage.getItem('token');
   let response = await axios.get(
     `http://localhost:3000/expense/expenses/load-data?page=${page}`,
     { headers: { Authorization: token } }
   );
-  //console.log(response);
+  console.log(response.data.expenses);
+  const ul=document.getElementById('details');
+  console.log(ul);
+  const listItems = document.querySelectorAll('#details li');
+
+// 👇️ NodeList(5) [li, li, li, li, li]
+console.log(listItems);
+
+listItems.forEach(listItem => {
+  listItem.parentNode.removeChild(listItem);
+});
+
+  console.log(ul);
+  const pagination=document.getElementById('pagination');
+  pagination.innerHTML='';
   for (let i = 0; i < response.data.expenses.length; i++) {
     showOnScreen(response.data.expenses[i]);
   }
