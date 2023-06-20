@@ -45,11 +45,34 @@
       <button id="leaderboard"></button>
       <button onclick="download()" id="downloadexpense"></button>
       <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      
       <ul id="details"><h1>Expenses</h1></ul>
       <ul id="boards"></ul>
-      <div id="pagination"></div>
+    <div id="pagination">
+      <div class="input-group mb-3">
+        <select class="form-select" id="dynamicpagination">
+            <option selected>Choose no Of expenses to show</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
     </div>
-
+    </div>
+    <div class="container">
+      <ul class="list-group" id="downloadlinks">
+          <h4 id="heading"></h4>
+      </ul>
+    </div>
+  </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/js/expense.js"></script>
   </body>

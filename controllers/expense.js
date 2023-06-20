@@ -1,11 +1,34 @@
 const Expense = require("../models/expense");
 const User = require("../models/user");
+const FilesDownload = require("../models/filesdownloaded");
 const path = require("path");
 const rootDir = require("../util/path");
 const sequelize = require("../util/database");
+const { json } = require("sequelize");
+const AWS = require("aws-sdk");
+require('dotenv').config();
+const S3Services = require("../services/S3services");
 
 exports.getHomePage = (req, res, next) => {
   res.sendFile(path.join(rootDir, "views", "expense.html"));
+};
+
+exports.download = async (req, res) => {
+  try {
+    const expenses = await Expense.findAll({ where: { userId: req.user.id } });
+    // console.log(expenses);
+    const strinfiyExpenses = JSON.stringify(expenses);
+    const userId = req.user.id;
+    const filename = `expenses${userId}/${new Date()}.txt`;
+    const fileUrl = await S3Services.uploadToS3(strinfiyExpenses, filename);
+    // await FilesDownload.create({
+    //   filelink: fileUrl,
+    //   userId,
+    // });
+    res.status(200).json({ fileUrl });
+  } catch (err) {
+    res.status(500).json({ fileUrl: "" });
+  }
 };
 
 exports.postAddExpense = async (req, res, next) => {
@@ -25,10 +48,13 @@ exports.postAddExpense = async (req, res, next) => {
       },
       { transaction: t }
     );
-    const oldamount=req.user.totalamount;
-    const newamount=Number(oldamount)  + Number(amount) ;
-   await User.update({totalamount:newamount} , {where:{id:req.user.id} , transaction:t });
-   await t.commit();
+    const oldamount = req.user.totalamount;
+    const newamount = Number(oldamount) + Number(amount);
+    await User.update(
+      { totalamount: newamount },
+      { where: { id: req.user.id }, transaction: t }
+    );
+    await t.commit();
     res.status(201).json({ newexpense: result });
   } catch (err) {
     await t.rollback();
@@ -36,27 +62,25 @@ exports.postAddExpense = async (req, res, next) => {
   }
 };
 
-const expensePerPage = 5;
-
 exports.sendExpenses = async (req, res, next) => {
   try {
     let page = +req.query.page || 1;
+    const pageSize = +req.query.pagesize || 5;
     let totalexpense = await Expense.count();
     console.log(totalexpense);
-    let expenses = await Expense.findAll(
-      { where: { userId: req.user.id },
-      offset: (page - 1) * expensePerPage,
-      limit: expensePerPage,
-      
+    let expenses = await Expense.findAll({
+      where: { userId: req.user.id },
+      offset: (page - 1) * pageSize,
+      limit: pageSize,
     });
     res.status(201).json({
       expenses: expenses,
       currentPage: page,
-      hasNextPage:page*expensePerPage<totalexpense,
-      nextPage:page+1,
-      hasPreviousPage:page>1,
-      previousPage:page-1,
-      lastPage:Math.ceil(totalexpense/expensePerPage)
+      hasNextPage: page * pageSize < totalexpense,
+      nextPage: page + 1,
+      hasPreviousPage: page > 1,
+      previousPage: page - 1,
+      lastPage: Math.ceil(totalexpense / pageSize),
     });
   } catch (err) {
     console.log(err);
@@ -97,3 +121,16 @@ exports.deleteExpense = async (req, res, next) => {
 //     console.log(err);
 //   }
 // }
+
+
+exports.downloadLinks=async (req,res)=>{
+  const t = await sequelize.transaction();
+try{
+  const url=await FilesDownload.findAll({where:{userId:req.user.id}})
+  res.status(200).json({sucess:'true',url})
+}
+catch(err){
+  console.log(err);
+  res.status(500).json({success:'false',error:err});
+}
+}

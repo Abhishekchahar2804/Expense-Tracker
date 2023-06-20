@@ -21,12 +21,12 @@ exports.postForgetPassword = async (req, res, next) => {
         host: "smtp.ethereal.email",
         port: 587,
         auth: {
-          user: "victoria.cruickshank@ethereal.email",
-          pass:"E6Ry9uGtNQ6TC86H98",
+          user: process.env.NODEMAILER_EMAIL,
+          pass:process.env.NODEMAILER_PASSWORD,
         },
       });
       const msg = {
-        from:"victoria.cruickshank@ethereal.email",
+        from:"destiney.boehm47@ethereal.email",
         to: email,
         subject: "Sending with nodemailer is Fun",
         text: "and easy to do anywhere, even with Node.js",

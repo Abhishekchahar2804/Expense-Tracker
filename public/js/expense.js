@@ -65,8 +65,8 @@ async function BuyPremium(e) {
         document.querySelector(".rzp").style.visibility = "hidden";
         document.querySelector("#msg").textContent = "You Are Premium User";
         document.getElementById("leaderboard").textContent = "Show Leaderboard";
-        document.getElementById("downloadexpense").textContent =
-          "Download File";
+        document.getElementById("downloadexpense").textContent = "Download File";
+        // showDownloadLinks();
         localStorage.setItem("token", res.data.token);
       },
     };
@@ -118,10 +118,9 @@ async function premiumFeature(e) {
 async function download() {
   let token = localStorage.getItem("token");
   try {
-    const response = await axios.get("http://localhost:3000/user/download", {
+    const response = await axios.get("http://localhost:3000/expense/download", {
       headers: { Authorization: token },
     });
-
     var a = document.createElement("a");
     a.href = response.data.fileUrl;
     a.download = "myexpense.csv";
@@ -129,6 +128,48 @@ async function download() {
   } catch (err) {
     console.log(err);
   }
+}
+
+function showDownloadLinks() {
+  const inputElement = document.createElement("input");
+  inputElement.type = "button";
+  inputElement.value = "Show Download File Link";
+  inputElement.id = "downloadfile-btn";
+  inputElement.style.backgroundColor = "gold";
+  inputElement.style.color = "black";
+  inputElement.style.borderRadius = "15px";
+  inputElement.style.padding = "8px";
+  inputElement.style.marginLeft = "100px";
+  const header = document.getElementById("main-header");
+  header.appendChild(inputElement);
+
+  inputElement.onclick = async () => {
+    const heading = document.getElementById("heading");
+    heading.innerText = "Show Download Url";
+    const downloadUrl = document.getElementById("downloadlinks");
+    const token = localStorage.getItem("token");
+
+    const downloadLinks = await axios.get(
+      "http://localhost:3000/expense/show-downloadLink",
+      { headers: { Authorization: token } }
+    );
+    console.log("downloadLinks", downloadLinks);
+    if (downloadLinks.data.url == [] || downloadLinks.data.url == "") {
+      const li = document.createElement("li");
+      li.innerText = "No Downloaded Url";
+      downloadUrl.append(li);
+    } else {
+      downloadLinks.data.url.forEach((Element) => {
+        console.log("Element.filelink", Element);
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = `${Element.filelink}`;
+        a.innerHTML = ` Url:  ${Element.filelink} `;
+        li.appendChild(a);
+        downloadUrl.appendChild(li);
+      });
+    }
+  };
 }
 
 function parseJwt(token) {
@@ -158,10 +199,12 @@ window.addEventListener("DOMContentLoaded", async () => {
       document.querySelector("#msg").textContent = "You Are Premium User";
       document.getElementById("leaderboard").textContent = "Show Leaderboard";
       document.getElementById("downloadexpense").textContent = "Download File";
+      // showDownloadLinks();
     }
     const page = 1;
+    let pagesize = localStorage.getItem("pagesize");
     let response = await axios.get(
-      `http://localhost:3000/expense/expenses/load-data?page=${page}`,
+      `http://localhost:3000/expense/expenses/load-data?page=${page}&pagesize=${pagesize}`,
       { headers: { Authorization: token } }
     );
     //console.log(response);
@@ -174,57 +217,67 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-function showPagination({currentPage,hasNextPage,nextPage,hasPreviousPage,previousPage}){
+function showPagination({
+  currentPage,
+  hasNextPage,
+  nextPage,
+  hasPreviousPage,
+  previousPage,
+}) {
+  const dynamicpagination = document.getElementById("dynamicpagination");
+  if (dynamicpagination) {
+    dynamicpagination.addEventListener("change", () => {
+      const pageSize = document.getElementById("dynamicpagination").value;
+      // console.log(pageSize);
+      localStorage.setItem("pagesize", pageSize);
+      getProducts(currentPage);
+    });
+  }
+  const pagination = document.getElementById("pagination");
 
-  const pagination=document.getElementById('pagination');
-
-  if(hasPreviousPage){
-    const prevBtn=document.createElement('button');
-    prevBtn.innerHTML=previousPage;
-    prevBtn.addEventListener('click' , ()=>{
-
+  if (hasPreviousPage) {
+    const prevBtn = document.createElement("button");
+    prevBtn.innerHTML = previousPage;
+    prevBtn.addEventListener("click", () => {
       getProducts(previousPage);
     });
     pagination.appendChild(prevBtn);
-   }
+  }
 
-  const crtBtn=document.createElement('button');
-  crtBtn.innerHTML=currentPage;
-  crtBtn.addEventListener('click',()=>{
+  const crtBtn = document.createElement("button");
+  crtBtn.innerHTML = currentPage;
+  crtBtn.addEventListener("click", () => {
     getProducts(currentPage);
   });
   pagination.appendChild(crtBtn);
-  if(hasNextPage){
-    const nextBtn=document.createElement('button');
-    nextBtn.innerHTML=nextPage;
-    nextBtn.addEventListener('click',()=>{
+  if (hasNextPage) {
+    const nextBtn = document.createElement("button");
+    nextBtn.innerHTML = nextPage;
+    nextBtn.addEventListener("click", () => {
       getProducts(nextPage);
     });
     pagination.appendChild(nextBtn);
-   }
+  }
 }
 
 async function getProducts(page) {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
+  const pageSize = localStorage.getItem("pagesize");
   let response = await axios.get(
-    `http://localhost:3000/expense/expenses/load-data?page=${page}`,
+    `http://localhost:3000/expense/expenses/load-data?page=${page}&pagesize=${pageSize}`,
     { headers: { Authorization: token } }
   );
-  console.log(response.data.expenses);
-  const ul=document.getElementById('details');
-  console.log(ul);
-  const listItems = document.querySelectorAll('#details li');
+  const ul = document.getElementById("details");
+  const listItems = document.querySelectorAll("#details li");
 
-// 👇️ NodeList(5) [li, li, li, li, li]
-console.log(listItems);
+  console.log(listItems);
 
-listItems.forEach(listItem => {
-  listItem.parentNode.removeChild(listItem);
-});
+  listItems.forEach((listItem) => {
+    listItem.parentNode.removeChild(listItem);
+  });
 
-  console.log(ul);
-  const pagination=document.getElementById('pagination');
-  pagination.innerHTML='';
+  const pagination = document.getElementById("pagination");
+  pagination.innerHTML = "";
   for (let i = 0; i < response.data.expenses.length; i++) {
     showOnScreen(response.data.expenses[i]);
   }
